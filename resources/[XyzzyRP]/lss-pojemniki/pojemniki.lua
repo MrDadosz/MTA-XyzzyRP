@@ -122,7 +122,7 @@ function insertItemToContainer(cid, itemid, count, subtype, name)
 --  outputDebugString("aaa")
   if ((not dane or not dane.id) and count<0) then	-- gracz chce zabrac przedmiot ktorego juz nie ma w pojemniku
 	return false
-  elseif (dane and dane.id and count<0 and tonumber(dane.count)<-count) then	-- gracz chce zabrac przedmiot ktorego jest za malo
+  elseif (dane and dane.id and count<0 and tonumber(dane.count)<=count) then	-- gracz chce zabrac przedmiot ktorego jest za malo
 	return false
   elseif (not dane and count>0) then   -- A. nie ma takiego itemu i ilosc jest dodatnia
 	query=string.format("INSERT INTO lss_container_contents SET container_id=%d,itemid=%d,count=%d,subtype=%s", cid, itemid, count, tonumber(subtype) and tostring(tonumber(subtype)) or "0")
@@ -169,13 +169,13 @@ addEventHandler("onContainerTransmit", root, function(p1, p2, poj)
   end
   -- przenosimy rzeczy z kontenera do eq gracza
   for i,v in ipairs(p2) do
-		if (v.itemid==-1 and v.count>0) then		-- gotowka
+		if (v.itemid==-1 and v.count>0 and v.count%1==0) then		-- gotowka
 		  if not insertItemToContainer(poj.id, v.itemid, -v.count, v.subtype, "Gotówka") then
 			outputChatBox("Wybrany przedmiot nie jest już dostępny", source, 255,0,0,true)
 			return
 		  end
 		  givePlayerMoney(source,v.count)
-		elseif (v.itemid>0 and v.count>0) then
+		elseif (v.itemid>0 and v.count>0 and v.count%1==0) then
 		  if not insertItemToContainer(poj.id, v.itemid, -v.count, v.subtype, v.name) then
 			outputChatBox("Wybrany przedmiot nie jest już dostępny", source, 255,0,0,true)
 			return
